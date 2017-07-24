@@ -3,6 +3,8 @@ require 'sinatra/base'
 require 'yaml'
 require 'digest/md5'
 require 'will_paginate/data_mapper'
+require './config/database'
+require './config/model'
 
 class App < Sinatra::Base
   
@@ -12,34 +14,8 @@ class App < Sinatra::Base
   # Include Session Cookie Module
   use Rack::Session::Cookie, :secret => "<secret>"
   
-  # Development Specific configs
-  configure :development do
-    DataMapper::Logger.new($stdout, :debug)
-  end
-
-  # Production specific configs
-  configure :production do
-    YAML.load_file(File.dirname(__FILE__)+'/config/production.yaml').each do |k, v|
-      set k, v
-    end    
-  end
-
   # General ENV configuration
   configure do
-
-    dbconf = YAML.load_file(File.dirname(__FILE__)+'/config/database.yaml')
-
-    case dbconf["adapter"]
-      when "mysql"
-        dbconf = dbconf[ENV['RACK_ENV']]
-        DataMapper.setup(:default, "mysql://#{dbconf["username"]}:#{dbconf["password"]}@#{dbconf["host"]}/#{dbconf["database"]}")
-      when "postgres"
-        dbconf = dbconf[ENV['RACK_ENV']]
-        DataMapper.setup(:postgres, "postgres://#{dbconf["username"]}:#{dbconf["password"]}@#{dbconf["host"]}/#{dbconf["database"]}")
-      when "sqlite3"
-        DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/db/application.db")
-    end    
-
     # Enable sessions for all ENV's
     enable :sessions    
     
@@ -53,11 +29,6 @@ class App < Sinatra::Base
     set :dump_errors   , true
     set :logging       , true
     set :raise_errors  , true
-
-    # Load general configs from the file
-    YAML.load_file(File.dirname(__FILE__)+'/config/development.yaml').each do |k, v|
-      set k, v
-    end    
   end
   
   helpers do
@@ -84,10 +55,12 @@ class App < Sinatra::Base
   not_found do
       redirect to('404.html')
   end  
+
+  before do
+    headers['server'] = 'Ruby, Ubuntu'
+  end
 end
 
-require './config/database'
-require './config/model'
 # Load up all helpers first (NB)
 Dir[File.dirname(__FILE__) + "/helpers/*.rb"].each do |file| 
   require file

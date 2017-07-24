@@ -236,3 +236,7 @@ You can find more info on the official [Heroku Dev Center](https://devcenter.her
 
 * Integrating test coverage or a template to build test from
 * Wire up some of the other Gems to show how they can be used
+
+# Fuentes:
+
++	https://github.com/Wixel/Frank-Sinatra
