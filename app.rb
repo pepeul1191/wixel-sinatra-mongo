@@ -86,6 +86,8 @@ class App < Sinatra::Base
   end  
 end
 
+require './config/database'
+require './config/model'
 # Load up all helpers first (NB)
 Dir[File.dirname(__FILE__) + "/helpers/*.rb"].each do |file| 
   require file

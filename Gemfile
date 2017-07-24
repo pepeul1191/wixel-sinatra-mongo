@@ -20,6 +20,7 @@ gem "awesome_print", :require => 'ap'
 gem "cucumber"
 gem "resque"
 gem "puma"
+gem "sequel"
 
 group :development do
   gem "sqlite3"   
